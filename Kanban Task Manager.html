@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management Tool</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #acc5f6; /* Light blue background */
+        }
+
+        header {
+            background-color: #343a40; /* Dark gray background */
+            color: #ffffff; /* White text color */
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        main {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        #projects, #tasks {
+            flex-basis: 45%;
+            padding: 20px;
+            border: 1px solid #dee2e6; /* Light gray border */
+            border-radius: 8px;
+            background-color: #ffffff; /* White background */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #tasks {
+            background-color: #f9f9f9; /* Light gray background */
+        }
+
+        #project-form, #task-form {
+            margin-bottom: 20px;
+        }
+
+        #kanban-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .board-column {
+            flex-basis: 30%;
+            border: 1px solid #dee2e6; /* Light gray border */
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            background-color: #ffffff; /* White background */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .task {
+            cursor: pointer;
+            margin-bottom: 10px;
+            padding: 15px;
+            border: 1px solid #dee2e6; /* Light gray border */
+            border-radius: 8px;
+            background-color: #fafafa; /* Light gray background */
+            transition: background-color 0.3s ease;
+        }
+
+        .task:hover {
+            background-color: #f0f0f0; /* Lighter gray on hover */
+        }
+
+        .task-details {
+            display: none;
+            margin-top: 10px;
+            background-color: #ffffff; /* White background */
+            border: 1px solid #dee2e6; /* Light gray border */
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-details p {
+            margin: 0;
+        }
+
+        .task-overdue {
+            color: #ff4d4d; /* Red for overdue tasks */
+            font-weight: bold;
+        }
+
+        .delete-button {
+            cursor: pointer;
+            color: #ff4d4d; /* Red for delete button */
+            margin-left: 5px;
+        }
+
+        .comment-section {
+            margin-top: 20px;
+            background-color: #ffffff; /* White background */
+            border: 1px solid #dee2e6; /* Light gray border */
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comment-section h2 {
+            color: #343a40; /* Dark gray text color */
+        }
+        
+        .comments {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .comment-form {
+            margin-top: 10px;
+        }
+        
+        .comment-form label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057; /* Dark gray text color */
+        }
+        
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da; /* Light gray border */
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: #acc5f6;
+            color: #ffffff; /* White text color */
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #7ca4f5;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da; /* Light gray border */
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus {
+            border-color: #7ca4f5; /* Change border color on focus */
+        }
+        
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Project Management Tool</h1>
+    </header>
+
+    <main>
+        <!-- Inside the #projects div -->
+        <div id="projects">
+            <h2 style="color: #343a40;">Projects</h2>
+            <form id="project-form">
+                <label for="project-name">Project Name:</label>
+                <input type="text" id="project-name" required>
+                <button type="button" onclick="addProject()">Add Project</button>
+            </form>
+            <ul id="project-list"></ul>
+        </div>
+
+        <div id="tasks">
+            <h2 style="color: #343a40;">Tasks</h2>
+            <form id="task-form">
+                <label for="task-name">Task Name:</label>
+                <input type="text" id="task-name" required>
+                <label for="deadline">Deadline:</label>
+                <input type="date" id="deadline">
+                <button type="button" onclick="addTask()">Add Task</button>
+            </form>
+            <ul id="task-list"></ul>
+        </div>
+    </main>
+
+    <div id="kanban-board">
+        <div class="board-column" id="todo-column">
+            <h3 style="color: #343a40;">Todo</h3>
+            <ul class="tasks" id="todo-tasks"></ul>
+        </div>
+        <div class="board-column" id="in-progress-column">
+            <h3 style="color: #343a40;">In Progress</h3>
+            <ul class="tasks" id="in-progress-tasks"></ul>
+        </div>
+        <div class="board-column" id="completed-column">
+            <h3 style="color: #343a40;">Completed</h3>
+            <ul class="tasks" id="completed-tasks"></ul>
+        </div>
+    </div>
+
+    <div class="comment-section">
+        <h2 style="color: #343a40;">Discussion Forum</h2>
+        <ul class="comments" id="discussion-comments"></ul>
+        <form class="comment-form">
+            <label for="comment">Add a comment:</label>
+            <textarea id="comment" rows="4" cols="50"></textarea>
+            <button type="button" onclick="addComment()">Post Comment</button>
+            <label for="secret-code">Secret Code:</label>
+        <input type="text" id="secret-code">
+            <button type="button" onclick="processComment()">Post Comment</button>
+        </form>
+    </div>
+
+    <ul class="comments" id="discussion-comments">
+        <!-- Each comment is represented as an <li> with class "comment-item" -->
+        <li class="comment-item">
+            <div class="comment-user-info">
+                <!-- User information (name and timestamp) goes here -->
+            </div>
+            <div class="comment-content">
+                <!-- Comment content goes here -->
+            </div>
+            <button class="reply-button">Reply</button>
+    
+            <!-- Nested list for replies -->
+            <ul class="replies"></ul>
+        </li>
+    </ul>
+    <form class="comment-form">
+        <!-- Comment form goes here -->
+
+    <button onclick="saveData()">Save Data</button>
+    <button onclick="loadData()">Load Data</button>
+
+    <script>
+        function addProject() {
+            var projectName = document.getElementById('project-name').value;
+            var projectList = document.getElementById('project-list');
+            var projectItem = document.createElement('li');
+            projectItem.textContent = projectName;
+    
+            // Add delete button
+            var deleteButton = document.createElement('h3');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('delete-button');
+            deleteButton.addEventListener('click', function () {
+                var confirmation = confirm("Are you sure you want to delete this project?");
+                if (confirmation) {
+                    deleteProject(projectItem);
+                }
+            });
+    
+            projectItem.appendChild(deleteButton);
+            projectList.appendChild(projectItem);
+            document.getElementById('project-name').value = '';
+        }
+    
+        function deleteProject(projectItem) {
+            var projectList = document.getElementById('project-list');
+            projectList.removeChild(projectItem);
+        }
+
+        function showTaskDetails(taskName, deadline) {
+            var taskDetails = document.getElementById('task-details');
+            taskDetails.innerHTML = `<p><strong>Task:</strong> ${taskName}</p>
+                                      <p><strong>Deadline:</strong> ${deadline}</p>`;
+            taskDetails.style.display = 'block';
+        }
+
+        function hideTaskDetails() {
+            var taskDetails = document.getElementById('task-details');
+            taskDetails.style.display = 'none';
+        }
+
+        function addTask() {
+            var taskName = document.getElementById('task-name').value;
+            var deadline = document.getElementById('deadline').value;
+            var taskList = document.getElementById('task-list');
+            var taskItem = document.createElement('li');
+            taskItem.textContent = taskName + ' - Deadline: ' + deadline;
+            taskItem.classList.add('task');
+            taskItem.setAttribute('draggable', true);
+            taskItem.addEventListener('dragstart', function (event) {
+                event.dataTransfer.setData('text/plain', taskName);
+            });
+            taskItem.addEventListener('click', function () {
+                showTaskDetails(taskName, deadline);
+            });
+
+            // Add delete button
+            var deleteButton = document.createElement('span');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('delete-button');
+            deleteButton.addEventListener('click', function () {
+                deleteTask(taskName);
+            });
+
+            taskItem.appendChild(deleteButton);
+            taskList.appendChild(taskItem);
+            document.getElementById('task-name').value = '';
+            document.getElementById('deadline').value = '';
+        }
+
+        function deleteTask(columnId, taskName) {
+            var taskList = document.getElementById(columnId + '-tasks');
+            if (taskList) {
+                var tasks = taskList.getElementsByClassName('task');
+                for (var i = 0; i < tasks.length; i++) {
+                    if (tasks[i].textContent.includes(taskName)) {
+                        taskList.removeChild(tasks[i]);
+                        hideTaskDetails();
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Due Date Highlighting
+        setInterval(function () {
+            var tasks = document.getElementsByClassName('task');
+            var currentDate = new Date();
+            for (var i = 0; i < tasks.length; i++) {
+                var taskText = tasks[i].textContent;
+                var deadlineString = taskText.split('Deadline: ')[1];
+                if (deadlineString) {
+                    var deadline = new Date(deadlineString);
+                    if (deadline < currentDate) {
+                        tasks[i].classList.add('task-overdue');
+                    } else {
+                        tasks[i].classList.remove('task-overdue');
+                    }
+                }
+            }
+        }, 1000 * 60); // Check every minute for due date highlighting
+        function addComment() {
+            var commentText = document.getElementById('comment').value;
+            var discussionComments = document.getElementById('discussion-comments');
+            var commentItem = document.createElement('li');
+            commentItem.textContent = commentText;
+            discussionComments.appendChild(commentItem);
+            document.getElementById('comment').value = '';
+        }
+
+        // Kanban Board Logic
+        var todoColumn = document.getElementById('todo-column');
+        var inProgressColumn = document.getElementById('in-progress-column');
+        var completedColumn = document.getElementById('completed-column');
+
+        todoColumn.addEventListener('dragover', function (event) {
+            event.preventDefault();
+        });
+
+        inProgressColumn.addEventListener('dragover', function (event) {
+            event.preventDefault();
+        });
+
+        completedColumn.addEventListener('dragover', function (event) {
+            event.preventDefault();
+        });
+
+        function moveToColumn(columnId, taskName, deadline) {
+            var taskList = document.getElementById(columnId + '-tasks');
+            var taskItem = document.createElement('li');
+            taskItem.textContent = taskName + ' - Deadline: ' + deadline;
+            taskItem.classList.add('task');
+            taskItem.setAttribute('draggable', true);
+            taskItem.addEventListener('dragstart', function (event) {
+                event.dataTransfer.setData('text/plain', taskName);
+            });
+            taskItem.addEventListener('click', function () {
+                showTaskDetails(taskName, deadline);
+            });
+        
+            // Add delete button
+            var deleteButton = document.createElement('span');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('delete-button');
+            deleteButton.addEventListener('click', function () {
+                deleteTask(columnId, taskName);
+            });
+        
+            taskItem.appendChild(deleteButton);
+            taskList.appendChild(taskItem);
+        
+            // Notify user about the task movement
+            alert('Task moved to ' + columnId + ' column');
+        }
+
+        function getDeadlineFromTaskList(taskListId, taskName) {
+            var taskList = document.getElementById(taskListId);
+            var tasks = taskList.getElementsByClassName('task');
+            for (var i = 0; i < tasks.length; i++) {
+                if (tasks[i].textContent.includes(taskName)) {
+                    var deadlineString = tasks[i].textContent.split(' - Deadline: ')[1];
+                    return deadlineString || ''; // Return deadline or an empty string if not found
+                }
+            }
+            return '';
+        }        
+        
+
+        todoColumn.addEventListener('drop', function (event) {
+            event.preventDefault();
+            var taskName = event.dataTransfer.getData('text/plain');
+            var deadline = getDeadlineFromTaskList('task-list', taskName);
+            moveToColumn('todo', taskName, deadline);
+        });
+        
+        inProgressColumn.addEventListener('drop', function (event) {
+            event.preventDefault();
+            var taskName = event.dataTransfer.getData('text/plain');
+            var deadline = getDeadlineFromTaskList('task-list', taskName);
+            moveToColumn('in-progress', taskName, deadline);
+        });
+        
+        completedColumn.addEventListener('drop', function (event) {
+            event.preventDefault();
+            var taskName = event.dataTransfer.getData('text/plain');
+            var deadline = getDeadlineFromTaskList('task-list', taskName);
+            moveToColumn('completed', taskName, deadline);
+        });
+
+        function addComment() {
+            var commentText = document.getElementById('comment').value;
+            var discussionComments = document.getElementById('discussion-comments');
+            var commentForm = document.getElementById('comment-form');
+    
+            if (commentText.trim() !== '') {
+                var commentItem = createCommentItem(commentText);
+                discussionComments.appendChild(commentItem);
+                commentForm.reset(); // Clear the textarea
+    
+                // Notify user about the new comment
+                alert('Comment added!');
+            } else {
+                alert('Please enter a comment before posting.');
+            }
+        }
+    
+        function createCommentItem(commentText) {
+            var commentItem = document.createElement('li');
+            commentItem.classList.add('comment-item');
+    
+            // Add user name and timestamp
+            var userInfo = document.createElement('div');
+            userInfo.classList.add('comment-user-info');
+    
+            var userName = document.createElement('span');
+            userName.textContent = 'John Doe'; // You can replace this with the actual user's name
+    
+            var timestamp = document.createElement('span');
+            timestamp.textContent = formatTimestamp(new Date());
+    
+            userInfo.appendChild(userName);
+            userInfo.appendChild(timestamp);
+    
+            // Add comment content
+            var commentContent = document.createElement('div');
+            commentContent.classList.add('comment-content');
+            commentContent.textContent = commentText;
+    
+            // Add reply button
+            var replyButton = document.createElement('button');
+            replyButton.textContent = 'Reply';
+            replyButton.classList.add('reply-button');
+            replyButton.addEventListener('click', function () {
+                // Handle reply logic (you can implement a reply form or modal)
+                alert('Implement reply logic here!');
+            });
+    
+            // Append elements to commentItem
+            commentItem.appendChild(userInfo);
+            commentItem.appendChild(commentContent);
+            commentItem.appendChild(replyButton);
+    
+            return commentItem;
+        }
+    
+        function formatTimestamp(date) {
+            var options = {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+            };
+    
+            return new Intl.DateTimeFormat('en-US', options).format(date);
+        }
+
+        // Reply Logic
+        function addReply(commentItem, replyText) {
+            var repliesList = commentItem.querySelector('.replies');
+            var replyItem = createReplyItem(replyText);
+            repliesList.appendChild(replyItem);
+
+            // Notify user about the new reply
+            alert('Reply added!');
+        }
+
+        function createReplyItem(replyText) {
+            var replyItem = document.createElement('li');
+            replyItem.classList.add('comment-item');
+
+            // Add user information (name and timestamp) for the reply
+            var userInfo = document.createElement('div');
+            userInfo.classList.add('comment-user-info');
+
+            var userName = document.createElement('span');
+            userName.textContent = 'Jane Doe'; // You can replace this with the actual user's name
+
+            var timestamp = document.createElement('span');
+            timestamp.textContent = formatTimestamp(new Date());
+
+            userInfo.appendChild(userName);
+            userInfo.appendChild(timestamp);
+
+            // Add reply content
+            var replyContent = document.createElement('div');
+            replyContent.classList.add('comment-content');
+            replyContent.textContent = replyText;
+
+            // Append elements to replyItem
+            replyItem.appendChild(userInfo);
+            replyItem.appendChild(replyContent);
+
+            return replyItem;
+        }
+
+        // Event listener for reply buttons
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('reply-button')) {
+                // Find the parent comment item
+                var commentItem = event.target.closest('.comment-item');
+
+                // Prompt the user for the reply text
+                var replyText = prompt('Enter your reply:');
+
+                // Check if the user entered a reply
+                if (replyText !== null && replyText.trim() !== '') {
+                    // Add the reply
+                    addReply(commentItem, replyText);
+                } else {
+                    alert('Reply cannot be empty.');
+                }
+            }
+        });
+
+        function saveData() {
+            // Get project and task data
+            var projectList = document.getElementById('project-list');
+            var taskList = document.getElementById('task-list');
+            var dataToSave = {
+                projects: [],
+                tasks: []
+            };
+
+            // Save project data
+            var projects = projectList.getElementsByTagName('li');
+            for (var i = 0; i < projects.length; i++) {
+                dataToSave.projects.push(projects[i].textContent);
+            }
+
+            // Save task data
+            var tasks = taskList.getElementsByClassName('task');
+            for (var i = 0; i < tasks.length; i++) {
+                var taskName = tasks[i].textContent.split(' - Deadline: ')[0];
+                var deadline = tasks[i].textContent.split(' - Deadline: ')[1];
+                dataToSave.tasks.push({ name: taskName, deadline: deadline });
+            }
+
+            // Convert data to JSON
+            var jsonData = JSON.stringify(dataToSave);
+
+            // Create a Blob and create a download link
+            var blob = new Blob([jsonData], { type: 'text/plain' });
+            var a = document.createElement('a');
+            a.href = window.URL.createObjectURL(blob);
+            a.download = 'project_data.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function loadData() {
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'text/plain';
+
+            input.addEventListener('change', function () {
+                var file = input.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var jsonData = e.target.result;
+                        var data = JSON.parse(jsonData);
+
+                        // Clear existing projects and tasks
+                        document.getElementById('project-list').innerHTML = '';
+                        document.getElementById('task-list').innerHTML = '';
+
+                        // Load projects
+                        var projectList = document.getElementById('project-list');
+                        for (var i = 0; i < data.projects.length; i++) {
+                            var projectItem = document.createElement('li');
+                            projectItem.textContent = data.projects[i];
+                            projectList.appendChild(projectItem);
+                        }
+
+                        // Load tasks
+                        var taskList = document.getElementById('task-list');
+                        for (var i = 0; i < data.tasks.length; i++) {
+                            var taskItem = document.createElement('li');
+                            taskItem.textContent = data.tasks[i].name + ' - Deadline: ' + data.tasks[i].deadline;
+                            taskItem.classList.add('task');
+                            taskItem.setAttribute('draggable', true);
+                            // Use a closure to capture the correct task information
+                            (function (task) {
+                                taskItem.addEventListener('dragstart', function (event) {
+                                    event.dataTransfer.setData('text/plain', task.name);
+                                });
+                            })(data.tasks[i]);
+                            taskList.appendChild(taskItem);
+                        }
+
+                    };
+
+                    reader.readAsText(file);
+                }
+            });
+
+            input.click();
+        }
+
+        function processComment() {
+            var commentText = document.getElementById('comment').value;
+            var secretCode = document.getElementById('secret-code').value;
+        
+            // Check if the secret code is present
+            if (secretCode.startsWith('#') && secretCode.endsWith('#')) {
+                var codeParts = secretCode.slice(1, -1).split(':');
+                var command = codeParts[0];
+                var value = codeParts[1];
+        
+                switch (command) {
+                    case 'task':
+                        // Parse task information and add task
+                        addTaskFromCode(value);
+                        break;
+                    case 'project':
+                        // Parse project information and add project
+                        addProjectFromCode(value);
+                        break;
+                    case 'name':
+                        // Parse name information
+                        alert('Name: ' + value); // You can perform specific actions here
+                        break;
+                    case 'date':
+                        // Parse date information
+                        alert('Date: ' + value); // You can perform specific actions here
+                        break;
+                    default:
+                        // Invalid command
+                        alert('Invalid secret code command.');
+                }
+            }
+        
+            // Clear input fields
+            document.getElementById('comment').value = '';
+            document.getElementById('secret-code').value = '';
+        }
+        
+        function addTaskFromCode(taskInfo) {
+            // Parse task information and add task
+            var taskParts = taskInfo.split('-');
+            var taskName = taskParts[0];
+            var deadline = taskParts[1];
+        
+            // Add the task using existing addTask function or custom logic
+            // Example: addTask(taskName, deadline);
+            alert('Task added: ' + taskName + ' - Deadline: ' + deadline);
+        }
+        
+        function addProjectFromCode(projectName) {
+            // Add the project using existing addProject function or custom logic
+            // Example: addProject(projectName);
+            alert('Project added: ' + projectName);
+        }
+        
+        
+    </script>
+
+</body>
+</html>
