@@ -162,7 +162,7 @@
         }
         
         input:focus {
-            border-color: #7ca4f5; /* Change border color on focus */
+            border-color: #7ca4f5;
         }
         
     </style>
@@ -174,7 +174,6 @@
     </header>
 
     <main>
-        <!-- Inside the #projects div -->
         <div id="projects">
             <h2 style="color: #343a40;">Projects</h2>
             <form id="project-form">
@@ -302,7 +301,7 @@
                 showTaskDetails(taskName, deadline);
             });
 
-            // Add delete button
+            // delete button
             var deleteButton = document.createElement('span');
             deleteButton.textContent = 'Delete';
             deleteButton.classList.add('delete-button');
@@ -386,7 +385,7 @@
                 showTaskDetails(taskName, deadline);
             });
         
-            // Add delete button
+            // delete button
             var deleteButton = document.createElement('span');
             deleteButton.textContent = 'Delete';
             deleteButton.classList.add('delete-button');
@@ -479,11 +478,9 @@
             replyButton.textContent = 'Reply';
             replyButton.classList.add('reply-button');
             replyButton.addEventListener('click', function () {
-                // Handle reply logic (you can implement a reply form or modal)
                 alert('Implement reply logic here!');
             });
     
-            // Append elements to commentItem
             commentItem.appendChild(userInfo);
             commentItem.appendChild(commentContent);
             commentItem.appendChild(replyButton);
@@ -670,11 +667,11 @@
                         break;
                     case 'name':
                         // Parse name information
-                        alert('Name: ' + value); // You can perform specific actions here
+                        alert('Name: ' + value);
                         break;
                     case 'date':
                         // Parse date information
-                        alert('Date: ' + value); // You can perform specific actions here
+                        alert('Date: ' + value);
                         break;
                     default:
                         // Invalid command
